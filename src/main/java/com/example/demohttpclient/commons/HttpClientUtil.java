@@ -46,23 +46,23 @@ public class HttpClientUtil {
     public static String getRequest(String url, String userAuth, String passAuth, Map<String, String> headers)
             throws Exception {
         CloseableHttpResponse response = null;
-        String returnString = "";
+        StringBuilder returnString = new StringBuilder();
         try {
             HttpGet httpget = new HttpGet(url);
             if (userAuth != null && passAuth != null) {
                 httpget.addHeader(getBasicAuthenHeader(userAuth, passAuth));
             }
             if (headers != null) {
-                headers.forEach((k, v) -> httpget.addHeader(k, v));
+                headers.forEach(httpget::addHeader);
             }
             response = client.execute(httpget);
             try (BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
                 String inputLine = "";
                 while ((inputLine = rd.readLine()) != null) {
-                    returnString += inputLine;
+                    returnString.append(inputLine);
                 }
             }
-            return returnString;
+            return returnString.toString();
         } catch (Exception ex) {
             LOGGER.error("Get request to url {} has error:{}", url, ex.getMessage());
             throw ex;
